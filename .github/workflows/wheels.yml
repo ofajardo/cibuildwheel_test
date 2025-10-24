@@ -41,6 +41,8 @@ jobs:
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
           SRC: ${{ github.workspace }}/pyreadstat
+          CIBW_TEST_REQUIRES: "-r requirements_test.txt"
+          CIBW_TEST_COMMAND: python pyreadstat/tests/test_basic.py
         with:
            package-dir: pyreadstat
            output-dir: dist
@@ -50,20 +52,4 @@ jobs:
         with:
           name: ${{ matrix.python }}-${{ matrix.buildplat[1] }}-${{ matrix.buildplat[2] }}
           path: ./dist/*.whl
-
-      - name: Rename Python version
-        shell: bash
-        run: echo "PY_VERSION=$(echo ${{ matrix.python-version }} | tr -d '.')" >> $GITHUB_ENV
-
-      - uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Test Wheel
-        run: |
-          pip install -r requirements_test.txt
-          ls dist
-          python --version
-          pip install dist/*.whl 
-          python pyreadstat/tests/test_basic.py
 
