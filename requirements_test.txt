@@ -1,0 +1,3 @@
+pandas
+polars
+narwhals==2.0.1

@@ -36,11 +36,6 @@ jobs:
           submodules: true
           persist-credentials: false
 
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-
-      - run: echo "🍏 This job's status is ${{ job.status }}."
       - name: Build wheels
         uses: pypa/cibuildwheel@9c00cb4f6b517705a3794b22395aedc36257242c  # v3.2.1
         env:
@@ -55,4 +50,11 @@ jobs:
         with:
           name: ${{ matrix.python }}-${{ matrix.buildplat[1] }}-${{ matrix.buildplat[2] }}
           path: ./dist/*.whl
+
+      - name: Test Wheel
+        run: |
+          pip install -r requirements_test.txt
+          ls dist
+          pip install dist/*.whl 
+          python pyreadstat/tests/test_basic.py
 
