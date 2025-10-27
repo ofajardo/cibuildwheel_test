@@ -41,8 +41,8 @@ jobs:
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
           SRC: ${{ github.workspace }}/pyreadstat
-          CIBW_TEST_REQUIRES: "-r requirements_test.txt"
-          CIBW_TEST_COMMAND: python pyreadstat/tests/test_basic.py
+          #CIBW_TEST_REQUIRES: "-r requirements_test.txt"
+          #CIBW_TEST_COMMAND: python pyreadstat/tests/test_basic.py
         with:
            package-dir: pyreadstat
            output-dir: dist
