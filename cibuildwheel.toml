@@ -45,18 +45,22 @@ macos = """
 windows = """
 # Windows dependencies are typically handled by cibuildwheel
 """
+[tool.cibuildwheel]
+test-sources = ["pyreadstat/tests", "requirements_test.txt"]
+test-requires = ["pandas", "narwhals==2.0.1"]
+test-command = "python pyreadstat/tests/test_basic.py"
 
 # Test commands to run after building
-[build.test-command]
+#[build.test-command]
 # Basic import test
-command = "python -c 'import pyreadstat; print(\"pyreadstat imported successfully\")'"
+#command = "python pyreadstat/tests/test_basic.py"
 
 # Test dependencies
-[build.test-requires]
+#[build.test-requires]
 # Add test dependencies
-packages = ["pytest>=6.0", "pandas>=1.0.0", "numpy>=1.16.0"]
+#packages = ["pytest>=6.0", "pandas>=1.0.0", "numpy>=1.16.0"]
 
 # Test extras
-[build.test-extras]
+#[build.test-extras]
 # Install test dependencies
-extras = ["test"]
+#extras = ["test"]
