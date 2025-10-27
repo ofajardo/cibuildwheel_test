@@ -46,7 +46,7 @@ windows = """
 # Windows dependencies are typically handled by cibuildwheel
 """
 [tool.cibuildwheel]
-test-sources = ["pyreadstat/tests", "requirements_test.txt"]
+test-sources = ["pyreadstat/tests", "pyreadstat/test_data"]
 test-requires = ["pandas", "narwhals==2.0.1"]
 test-command = "python pyreadstat/tests/test_basic.py"
 
