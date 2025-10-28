@@ -63,6 +63,7 @@ jobs:
           msbuild.exe libiconv-win-build/build-VS2022-MT/libiconv.sln /property:Configuration=Release;Platform=X64
           copy libiconv-win-build\\include\\iconv.h pyreadstat\\win_libs\\64bit
           copy libiconv-win-build\\build-VS2022-MT\\x64\\Release\\libiconv-static.lib  pyreadstat\\win_libs\\64bit
+        shell: cmd
 
       - name: build zlib
         run: |
@@ -70,6 +71,7 @@ jobs:
           copy zlib-win-build\\zlib.h pyreadstat\\win_libs\\64bit
           copy zlib-win-build\\zconf.h pyreadstat\\win_libs\\64bit
           copy zlib-win-build\\build-VS2022-MT\\x64\\Release\\libz-static.lib  pyreadstat\\win_libs\\64bit
+        shell: cmd
 
 
       - name: Build wheels
