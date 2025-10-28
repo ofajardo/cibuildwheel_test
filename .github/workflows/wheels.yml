@@ -17,7 +17,7 @@ jobs:
         # Github Actions doesn't support pairing matrix values together, let's improvise
         # https://github.com/github/feedback/discussions/7835#discussioncomment-1769026
         buildplat:
-        - [windows-2022, win_amd64, ""]
+        - [windows-2019, win_amd64, ""]
         python:
         - ["cp312", "3.12"]
         #python: ["cp310", "cp311", "cp312", "cp313", "cp314"]
@@ -54,6 +54,23 @@ jobs:
           path: zlib-win-build
           submodules: true
           persist-credentials: false
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: build libiconv
+        run: |
+          msbuild.exe libiconv-win-build/build-VS2019-MT/libiconv.sln /property:Configuration=Release;Platform=X64
+          copy libiconv-win-build\\include\\iconv.h pyreadstat\\win_libs\\64bit
+          copy libiconv-win-build\\build-VS2019-MT\\x64\\Release\\libiconv-static.lib  pyreadstat\\win_libs\\64bit
+
+      - name: build zlib
+        run: |
+          msbuild.exe zlib-win-build/build-VS2019-MT/zlib.sln /property:Configuration=Release;Platform=X64
+          copy zlib-win-build\\zlib.h pyreadstat\\win_libs\\64bit
+          copy zlib-win-build\\zconf.h pyreadstat\\win_libs\\64bit
+          copy zlib-win-build\\build-VS2019-MT\\x64\\Release\\libz-static.lib  pyreadstat\\win_libs\\64bit
+
 
       - name: Build wheels
         uses: pypa/cibuildwheel@9c00cb4f6b517705a3794b22395aedc36257242c  # v3.2.1
