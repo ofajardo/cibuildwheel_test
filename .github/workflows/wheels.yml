@@ -68,7 +68,7 @@ jobs:
         # https://github.com/github/feedback/discussions/7835#discussioncomment-1769026
         buildplat:
         - [windows-2022, win_amd64, ""]
-        python: ["cp312"]
+        python:
         - ["cp312", "3.12"]
         #python: ["cp310", "cp311", "cp312", "cp313", "cp314"]
 
@@ -104,7 +104,6 @@ jobs:
           path: zlib-win-build
           submodules: true
           persist-credentials: false
-
 
       - name: Install Miniforge
         uses: conda-incubator/setup-miniconda@v3
