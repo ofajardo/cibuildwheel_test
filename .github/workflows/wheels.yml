@@ -71,7 +71,6 @@ jobs:
       - uses: actions/download-artifact@v5
         id: download
         with:
-          pattern: wheels-*
           path: ./dist
           merge-multiple: true
       - name: Upload wheel
