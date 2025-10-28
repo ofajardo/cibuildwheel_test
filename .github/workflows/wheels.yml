@@ -17,7 +17,7 @@ jobs:
         # Github Actions doesn't support pairing matrix values together, let's improvise
         # https://github.com/github/feedback/discussions/7835#discussioncomment-1769026
         buildplat:
-        - [windows-2019, win_amd64, ""]
+        - [windows-2022, win_amd64, ""]
         python:
         - ["cp312", "3.12"]
         #python: ["cp310", "cp311", "cp312", "cp313", "cp314"]
@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           repository: kiyolee/libiconv-win-build 
-          ref: e6a1bcfe6a3a6e75e351e096286d14c14b5ef79b
+          ref: dff1030d222ba934e0f4a9cdab9c34134f072f68
           path: libiconv-win-build
           submodules: true
           persist-credentials: false
@@ -50,7 +50,7 @@ jobs:
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           repository: kiyolee/zlib-win-build
-          ref: 48e49de94a66b0e3cecee38530993bd0c1de5bfa
+          ref: 30623e05e64fe4b97f2073ddaf8d3ba0e99d7249
           path: zlib-win-build
           submodules: true
           persist-credentials: false
@@ -60,16 +60,16 @@ jobs:
 
       - name: build libiconv
         run: |
-          msbuild.exe libiconv-win-build/build-VS2019-MT/libiconv.sln /property:Configuration=Release;Platform=X64
+          msbuild.exe libiconv-win-build/build-VS2022-MT/libiconv.sln /property:Configuration=Release;Platform=X64
           copy libiconv-win-build\\include\\iconv.h pyreadstat\\win_libs\\64bit
-          copy libiconv-win-build\\build-VS2019-MT\\x64\\Release\\libiconv-static.lib  pyreadstat\\win_libs\\64bit
+          copy libiconv-win-build\\build-VS2022-MT\\x64\\Release\\libiconv-static.lib  pyreadstat\\win_libs\\64bit
 
       - name: build zlib
         run: |
-          msbuild.exe zlib-win-build/build-VS2019-MT/zlib.sln /property:Configuration=Release;Platform=X64
+          msbuild.exe zlib-win-build/build-VS2022-MT/zlib.sln /property:Configuration=Release;Platform=X64
           copy zlib-win-build\\zlib.h pyreadstat\\win_libs\\64bit
           copy zlib-win-build\\zconf.h pyreadstat\\win_libs\\64bit
-          copy zlib-win-build\\build-VS2019-MT\\x64\\Release\\libz-static.lib  pyreadstat\\win_libs\\64bit
+          copy zlib-win-build\\build-VS2022-MT\\x64\\Release\\libz-static.lib  pyreadstat\\win_libs\\64bit
 
 
       - name: Build wheels
