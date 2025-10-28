@@ -7,7 +7,7 @@ env:
 on: [push]
 
 jobs:
-  build_wheels:
+  build_wheels_unix:
     name: Build wheel ${{ matrix.python }}-${{ matrix.buildplat[1] }}-${{ matrix.buildplat[2] }}
     runs-on: ${{ matrix.buildplat[0] }}
     strategy:
@@ -47,6 +47,91 @@ jobs:
           SRC: ${{ github.workspace }}/pyreadstat
           #CIBW_TEST_REQUIRES: "-r requirements_test.txt"
           #CIBW_TEST_COMMAND: python pyreadstat/tests/test_basic.py
+        with:
+           package-dir: pyreadstat
+           output-dir: dist
+           config-file: cibuildwheel.toml
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ matrix.python }}-${{ matrix.buildplat[1] }}-${{ matrix.buildplat[2] }}
+          path: ./dist/*.whl
+
+  build_wheels_windows:
+    name: Build wheel ${{ matrix.python }}-${{ matrix.buildplat[1] }}-${{ matrix.buildplat[2] }}
+    runs-on: ${{ matrix.buildplat[0] }}
+    strategy:
+      # Ensure that a wheel builder finishes even if another fails
+      fail-fast: false
+      matrix:
+        # Github Actions doesn't support pairing matrix values together, let's improvise
+        # https://github.com/github/feedback/discussions/7835#discussioncomment-1769026
+        buildplat:
+        - [windows-2022, win_amd64, ""]
+        python: ["cp312"]
+        - ["cp312", "3.12"]
+        #python: ["cp310", "cp311", "cp312", "cp313", "cp314"]
+
+    steps:
+      - name: Checkout pyreadstat-wheels
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+
+      - name: Checkout pyreadstat
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          repository: Roche/pyreadstat
+          ref: ${{ env.SOURCE_REF_TO_BUILD }}
+          path: pyreadstat
+          submodules: true
+          persist-credentials: false
+
+      - name: Checkout libiconv
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          repository: kiyolee/libiconv-win-build 
+          ref: e6a1bcfe6a3a6e75e351e096286d14c14b5ef79b
+          path: libiconv-win-build
+          submodules: true
+          persist-credentials: false
+
+      - name: Checkout zlib
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          repository: kiyolee/zlib-win-build
+          ref: 48e49de94a66b0e3cecee38530993bd0c1de5bfa
+          path: zlib-win-build
+          submodules: true
+          persist-credentials: false
+
+
+      - name: Install Miniforge
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          auto-activate: true
+          activate-environment: ""
+          python-version: ${{ matrix.python[1] }}
+
+      - name: build libiconv
+        run: |
+          msbuild.exe libiconv-win-build/build-VS2019-MT/libiconv.sln /property:Configuration=Release;Platform=X64
+          copy libiconv-win-build\\include\\iconv.h pyreadstat\\win_libs\\64bit
+          copy libiconv-win-build\\build-VS2019-MT\\x64\\Release\\libiconv-static.lib  pyreadstat\\win_libs\\64bit
+
+      - name: build zlib
+        run: |
+          msbuild.exe zlib-win-build/build-VS2019-MT/zlib.sln /property:Configuration=Release;Platform=X64
+          copy zlib-win-build\\zlib.h pyreadstat\\win_libs\\64bit
+          copy zlib-win-build\\zconf.h pyreadstat\\win_libs\\64bit
+          copy zlib-win-build\\build-VS2019-MT\\x64\\Release\\libz-static.lib  pyreadstat\\win_libs\\64bit
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@9c00cb4f6b517705a3794b22395aedc36257242c  # v3.2.1
+        env:
+          CIBW_BUILD: ${{ matrix.python[0] }}-${{ matrix.buildplat[1] }}
+          SRC: ${{ github.workspace }}/pyreadstat
         with:
            package-dir: pyreadstat
            output-dir: dist
